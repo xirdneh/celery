@@ -33,24 +33,73 @@ matrix:
   - python: '3.5'
     env: TOXENV=flake8
     stage: lint
+    sudo: false
+    addons:
+      apt:
+        sources:
+          - couchbase: deb http://packages.couchbase.com/ubuntu trusty trusty/main
+        packages:
+          - libcouchbase-dev
   - python: '3.5'
     env: TOXENV=flakeplus
     stage: lint
+    sudo: false
+    addons:
+      apt:
+        sources:
+          - couchbase: deb http://packages.couchbase.com/ubuntu trusty trusty/main
+        packages:
+          - libcouchbase-dev
   - python: '3.5'
     env: TOXENV=apicheck
     stage: lint
+    sudo: false
+    addons:
+      apt:
+        sources:
+          - couchbase: deb http://packages.couchbase.com/ubuntu trusty trusty/main
+        packages:
+          - libcouchbase-dev
   - python: '3.5'
     env: TOXENV=configcheck
     stage: lint
+    sudo: false
+    addons:
+      apt:
+        sources:
+          - couchbase: deb http://packages.couchbase.com/ubuntu trusty trusty/main
+        packages:
+          - libcouchbase-dev
   - python: '3.5'
     env: TOXENV=bandit
     stage: lint
+    sudo: false
+    addons:
+      apt:
+        sources:
+          - couchbase: deb http://packages.couchbase.com/ubuntu trusty trusty/main
+        packages:
+          - libcouchbase-dev
   - python: '3.5'
     env: TOXENV=pydocstyle
     stage: lint
+    sudo: false
+    addons:
+      apt:
+        sources:
+          - couchbase: deb http://packages.couchbase.com/ubuntu trusty trusty/main
+        packages:
+          - libcouchbase-dev
   - python: '3.5'
     env: TOXENV=isort-check
     stage: lint
+    sudo: false
+    addons:
+      apt:
+        sources:
+          - couchbase: deb http://packages.couchbase.com/ubuntu trusty trusty/main
+        packages:
+          - libcouchbase-dev
 before_install:
     - if [[ -v MATRIX_TOXENV ]]; then export TOXENV=${TRAVIS_PYTHON_VERSION}-${MATRIX_TOXENV}; fi; env
     - |
@@ -81,9 +130,11 @@ before_install:
               curl localhost:8000
           fi
     - |
-          wget -qO - https://packages.couchbase.com/ubuntu/couchbase.key | sudo apt-key add -
-          sudo apt-add-repository -y 'deb http://packages.couchbase.com/ubuntu trusty trusty/main'
-          sudo apt-get update && sudo apt-get install -y libcouchbase-dev
+          if [[ -v MATRIX_TOXENV || "$TOXENV" =~ "pypy" ]]; then
+            wget -qO - https://packages.couchbase.com/ubuntu/couchbase.key | sudo apt-key add -
+            sudo apt-add-repository -y 'deb http://packages.couchbase.com/ubuntu trusty trusty/main'
+            sudo apt-get update && sudo apt-get install -y libcouchbase-dev
+          fi;
 after_success:
   - |
           if [[ -v MATRIX_TOXENV || "$TOXENV" =~ "pypy" ]]; then
